@@ -26,14 +26,12 @@ namespace Database_Project
         private void button1_Click(object sender, EventArgs e)
         {
             panel1.Visible = true;
-            string line;
-            string[] info;
-            StudentStat tempStud = new StudentStat();
             if (File.Exists(path))
             {
-                StreamReader file = new StreamReader(path);
-                while((line = file.ReadLine()) != null)
+                foreach(string line in File.ReadLines(path))
                 {
+                    string[] info;
+                    StudentStat tempStud = new StudentStat();
                     info = line.Split(' ');
                     info[6] = info[6].Remove(info[6].Length - 2);
                     info[7] = info[7].Remove(info[7].Length - 2);
@@ -58,30 +56,35 @@ namespace Database_Project
                     techStat += tempStud.TechGPA;
                     humStat += tempStud.HumGPA;
                 }
-                file.Close();
 
             }
 
             techStat = techStat / students.Count;
             humStat = humStat / students.Count;
+            string toTech = "Technical Subjects Average GPA - " + techStat;
+            string toHum = "Humanitarian Subjects Average GPA - " + humStat;
+            chart2.Series[0].Points.AddXY(toTech, techStat);
+            chart2.Series[0].Points.AddXY(toHum, humStat);
 
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             string[] item = comboBox1.SelectedItem.ToString().Split(' ');
-            StudentStat tempStudStat = students.FirstOrDefault((p) => p.Name == item[0] && p.Surname == item[1]);
+            StudentStat tempStudStat = students.First(p => p.Surname.Equals(item[1]));
 
             name.Text = tempStudStat.Name;
             surname.Text = tempStudStat.Surname;
             id.Text = tempStudStat.Id;
             techGPA.Text = tempStudStat.TechGPA.ToString();
             humGPA.Text = tempStudStat.HumGPA.ToString();
+
+            chart1.ChartAreas[0].AxisX.Maximum = 8;
+            chart1.ChartAreas[0].AxisX.Minimum = 0;
+            chart1.Series[0].Points.Clear();
             for (int i=0; i<tempStudStat.SemesterGPA.Count-1; i++)
             {
-                chart1.Series["Student"].Points.Clear();
-                chart1.Series["Student"].Points.AddXY(i + 1, tempStudStat.SemesterGPA[i]);
-                //chart1.Update();
+                chart1.Series[0].Points.AddXY(i + 1, tempStudStat.SemesterGPA[i]);
                 chart1.Refresh();
             }
         }
