@@ -1,0 +1,9 @@
+C:\Users\Sattar\Downloads\CSharp\Database_Project\Database_Project\bin\Debug\Database_Project.exe.config
+C:\Users\Sattar\Downloads\CSharp\Database_Project\Database_Project\bin\Debug\Database_Project.exe
+C:\Users\Sattar\Downloads\CSharp\Database_Project\Database_Project\bin\Debug\Database_Project.pdb
+C:\Users\Sattar\Downloads\CSharp\Database_Project\Database_Project\obj\Debug\Database_Project.csprojResolveAssemblyReference.cache
+C:\Users\Sattar\Downloads\CSharp\Database_Project\Database_Project\obj\Debug\Database_Project.Form1.resources
+C:\Users\Sattar\Downloads\CSharp\Database_Project\Database_Project\obj\Debug\Database_Project.Properties.Resources.resources
+C:\Users\Sattar\Downloads\CSharp\Database_Project\Database_Project\obj\Debug\Database_Project.csproj.GenerateResource.Cache
+C:\Users\Sattar\Downloads\CSharp\Database_Project\Database_Project\obj\Debug\Database_Project.exe
+C:\Users\Sattar\Downloads\CSharp\Database_Project\Database_Project\obj\Debug\Database_Project.pdb
