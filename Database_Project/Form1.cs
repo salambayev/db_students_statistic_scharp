@@ -22,7 +22,7 @@ namespace Database_Project
         public List<StudentStat> students = new List<StudentStat>();
         public double techStat;
         public double humStat;
-
+        
         private void button1_Click(object sender, EventArgs e)
         {
             panel1.Visible = true;
@@ -44,9 +44,9 @@ namespace Database_Project
                     tempStud.TechGPA = double.Parse(info[6]);
                     tempStud.HumGPA = double.Parse(info[7]);
                     int i = 8;
-                    while(i < info.Length-1)
+                    tempStud.SemesterGPA = new List<double>();
+                    while (i < info.Length-1)
                     {
-                        tempStud.SemesterGPA = new List<double>();
                         tempStud.SemesterGPA.Add(double.Parse(info[i]));
                         i++;
                     }
@@ -78,20 +78,24 @@ namespace Database_Project
             id.Text = tempStudStat.Id;
             techGPA.Text = tempStudStat.TechGPA.ToString();
             humGPA.Text = tempStudStat.HumGPA.ToString();
-
-            chart1.ChartAreas[0].AxisX.Maximum = 8;
-            chart1.ChartAreas[0].AxisX.Minimum = 0;
+            
             chart1.Series[0].Points.Clear();
             for (int i=0; i<tempStudStat.SemesterGPA.Count-1; i++)
             {
-                chart1.Series[0].Points.AddXY(i + 1, tempStudStat.SemesterGPA[i]);
-                chart1.Refresh();
+                chart1.Series[0].Points.AddXY((i + 1), tempStudStat.SemesterGPA[i]);
             }
+            chart1.Refresh();
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            DataPreparation dp = new DataPreparation();
+            dp.PrepareData(path);
         }
     }
 }
