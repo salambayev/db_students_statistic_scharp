@@ -20,52 +20,46 @@ namespace Database_Project
 
         public string path = @"C:\Users\Sattar\Downloads\CSharp\Database_Project\Database_Project\kbtuData.txt";
         public List<StudentStat> students = new List<StudentStat>();
+        public List<string> speciality = new List<string>();
+        public List<string> years = new List<string>();
+
+        DataPreparation dp = new DataPreparation();
+
         public double techStat;
         public double humStat;
         
         private void button1_Click(object sender, EventArgs e)
         {
             panel1.Visible = true;
-            if (File.Exists(path))
+            students = dp.TakeData(path);
+
+            for (int i=0; i<students.Count; i++)
             {
-                foreach(string line in File.ReadLines(path))
+                string temp = students[i].Name + " " + students[i].Surname;
+                if (!speciality.Contains(students[i].Speciality))
                 {
-                    string[] info;
-                    StudentStat tempStud = new StudentStat();
-                    info = line.Split(' ');
-                    info[6] = info[6].Remove(info[6].Length - 2);
-                    info[7] = info[7].Remove(info[7].Length - 2);
-                    tempStud.Surname = info[0];
-                    tempStud.Name = info[1];
-                    tempStud.FamilyName = info[2];
-                    tempStud.Id = info[3];
-                    tempStud.Speciality = info[4];
-                    tempStud.Course = int.Parse(info[5]);
-                    tempStud.TechGPA = double.Parse(info[6]);
-                    tempStud.HumGPA = double.Parse(info[7]);
-                    int i = 8;
-                    tempStud.SemesterGPA = new List<double>();
-                    while (i < info.Length-1)
-                    {
-                        tempStud.SemesterGPA.Add(double.Parse(info[i]));
-                        i++;
-                    }
-                    students.Add(tempStud);
-                    string temp = tempStud.Name + " " + tempStud.Surname;
-                    comboBox1.Items.Add(temp);
-                    techStat += tempStud.TechGPA;
-                    humStat += tempStud.HumGPA;
+                    speciality.Add(students[i].Speciality);
+                    comboBox2.Items.Add(students[i].Speciality);
                 }
-
+                string tempId = students[i].Id.Substring(0, 4);
+                if (!years.Contains(tempId))
+                {
+                    years.Add(tempId);
+                    comboBox3.Items.Add(tempId);
+                }
+                comboBox1.Items.Add(temp);
             }
+            
 
-            techStat = techStat / students.Count;
-            humStat = humStat / students.Count;
+            techStat = dp.GetTechStat();
+            humStat = dp.GetHumStat();
+
             string toTech = "Technical Subjects Average GPA - " + techStat;
             string toHum = "Humanitarian Subjects Average GPA - " + humStat;
             chart2.Series[0].Points.AddXY(toTech, techStat);
             chart2.Series[0].Points.AddXY(toHum, humStat);
 
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -78,9 +72,21 @@ namespace Database_Project
             id.Text = tempStudStat.Id;
             techGPA.Text = tempStudStat.TechGPA.ToString();
             humGPA.Text = tempStudStat.HumGPA.ToString();
+
+            int TechProcent = (int)dp.TechLearningResults(students, tempStudStat.Id);
+            int HumProcent = (int)dp.HumLearningResults(students, tempStudStat.Id);
+            label7.Text = TechProcent + "% of Students in Technical Subjects and " + HumProcent + "% of students in Humanitarian Subjects!";
+            label6.Visible = true;
+            label7.Visible = true;
+
+            string toTech = "Technical Subjects Average GPA - " + tempStudStat.TechGPA;
+            string toHum = "Humanitarian Subjects Average GPA - " + tempStudStat.HumGPA;
+            chart2.Series[0].Points.Clear();
+            chart2.Series[0].Points.AddXY(toTech, tempStudStat.TechGPA);
+            chart2.Series[0].Points.AddXY(toHum, tempStudStat.HumGPA);
             
             chart1.Series[0].Points.Clear();
-            for (int i=0; i<tempStudStat.SemesterGPA.Count-1; i++)
+            for (int i=0; i<tempStudStat.SemesterGPA.Count; i++)
             {
                 chart1.Series[0].Points.AddXY((i + 1), tempStudStat.SemesterGPA[i]);
             }
@@ -94,8 +100,79 @@ namespace Database_Project
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            DataPreparation dp = new DataPreparation();
             dp.PrepareData(path);
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox3.SelectedItem != null)
+            {
+                List<StudentStat> itemsToComboBox = students.FindAll(p => p.Speciality == comboBox2.SelectedItem.ToString() && p.Id.Contains(comboBox3.SelectedItem.ToString()));
+                comboBox1.Items.Clear();
+                for (int i = 0; i < itemsToComboBox.Count; i++)
+                {
+                    comboBox1.Items.Add(itemsToComboBox[i].Name + " " + itemsToComboBox[i].Surname);
+                }
+            }
+            else
+            {
+                List<StudentStat> itemsToComboBox = students.FindAll(p => p.Speciality == comboBox2.SelectedItem.ToString());
+                comboBox1.Items.Clear();
+                for (int i = 0; i < itemsToComboBox.Count; i++)
+                {
+                    comboBox1.Items.Add(itemsToComboBox[i].Name + " " + itemsToComboBox[i].Surname);
+                }
+            }
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox2.SelectedItem != null)
+            {
+                List<StudentStat> itemsToComboBox = students.FindAll(p => p.Id.Contains(comboBox3.SelectedItem.ToString()) && p.Speciality == comboBox2.SelectedItem.ToString());
+                comboBox1.Items.Clear();
+                for (int i = 0; i < itemsToComboBox.Count; i++)
+                {
+                    comboBox1.Items.Add(itemsToComboBox[i].Name + " " + itemsToComboBox[i].Surname);
+                }
+            }
+            else
+            {
+                List<StudentStat> itemsToComboBox = students.FindAll(p => p.Id.Contains(comboBox3.SelectedItem.ToString()));
+                comboBox1.Items.Clear();
+                for (int i = 0; i < itemsToComboBox.Count; i++)
+                {
+                    comboBox1.Items.Add(itemsToComboBox[i].Name + " " + itemsToComboBox[i].Surname);
+                }
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            panel2.Visible = true;
+            chart3.Series[0].Points.Clear();
+            chart4.Series[0].Points.Clear();
+            for (int i=0; i<years.Count; i++)
+            {
+                List<StudentStat> name = students.FindAll(d => d.Id.Contains(years[i]));
+                double tempTechGPA = 0;
+                double tempHumGPA = 0;
+                for (int j=0; j<name.Count; j++)
+                {
+                    tempTechGPA += name[j].TechGPA;
+                    tempHumGPA += name[j].HumGPA;
+                }
+                tempTechGPA = tempTechGPA / name.Count;
+                tempHumGPA = tempHumGPA / name.Count;
+
+                chart3.Series[0].Points.AddXY(years[i], tempHumGPA);
+                chart4.Series[0].Points.AddXY(years[i], tempTechGPA);
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            panel2.Visible = false;
         }
     }
 }
